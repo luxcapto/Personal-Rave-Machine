@@ -16,6 +16,7 @@ int delay1 = 0;
 int delay2 = 750;
 int delay3 = 0;
 int increment = 0;
+int action = 0;
 
 //Status Bytes
 boolean noteOn = false;
@@ -24,7 +25,7 @@ boolean clearStatus = false;
 
 //Second Byte
 int note = 0;
-int controlFuction = 0;
+int controlFunction = 0;
 
 //Third Byte
 int velocity = 0;
@@ -50,7 +51,7 @@ void loop() {
     }else if (controlFunction == 17){
       controlValue = incomingByte;
       increment = controlValue - '0'; 
-    }else if (noteOn == false && note == 0) ){ // if we received a "note off", we wait for which note (databyte)      
+    }else if (noteOn == false && note == 0){ // if we received a "note off", we wait for which note (databyte)      
       clearLights();
       note = incomingByte;
       note = 0;
