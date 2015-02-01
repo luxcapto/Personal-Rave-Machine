@@ -12,7 +12,7 @@ int green = 0;
 int blue = 5;
 
 //Light control variables
-int delay1 = 0;
+int delay1 = 20;
 int delay2 = 750;
 int delay3 = 0;
 int increment = 0;
@@ -39,36 +39,49 @@ void setup() {
 
 void loop() {
   if(Serial.available() > 0) {
+
     incomingByte = Serial.read();
+    
     if (incomingByte == 144){
       noteOn = true;
-    }else if (incomingByte == 128){
-      noteOn = false;
-    }else if (incomingByte == 176){
-      controlChange = true;
-    }else if (controlChange == true){
-      controlFunction = incomingByte;
-    }else if (controlFunction == 17){
-      controlValue = incomingByte;
-      increment = controlValue - '0'; 
-    }else if (noteOn == false && note == 0){ // if we received a "note off", we wait for which note (databyte)      
-      clearLights();
-      note = incomingByte;
-      note = 0;
-      velocity = 0;
-      clearStatus = true;
-   }else if (noteOn == true && note == 0){ // if we received a "note on", we wait for the note (databyte)
-//     note=incomingByte;
-      pulseLights();
-   }else if (noteOn == true && note != 0){ // ...and then the velocity
-     velocity=incomingByte;
-     //playNote(note, velocity);
-     note=0;
-     velocity=0;
-     action=0;
-   }else{
-     //nada
-   }    
+    }
+      else if (incomingByte == 128){
+        noteOn = false;
+      }
+        else if (incomingByte == 176){
+          controlChange = true;
+        }
+          else if (controlChange == true){
+            controlFunction = incomingByte;
+            delay1 = 1000;
+          }
+            else if (controlFunction == 17){
+              controlValue = incomingByte;
+              increment = controlValue - '0'; 
+            }
+              else if (noteOn == false && note == 0){ // if we received a "note off", we wait for which note (databyte)      
+                clearLights();
+                note = incomingByte;
+                note = 0;
+                velocity = 0;
+                clearStatus = true;
+              }
+                else if (noteOn == true && note == 0){ // if we received a "note on", we wait for the note (databyte)
+                  pulseLights();
+                  note=incomingByte;
+                } 
+                  else if (noteOn == true && note != 0){ // ...and then the velocity
+                    velocity=incomingByte;
+                    //playNote(note, velocity);
+                    note=0;
+                    velocity=0;
+                    action=0;
+                  }
+                    else{
+                    }    
+  }
+}
+
     
 //    if(incomingByte == 176)
 //    {
@@ -95,8 +108,6 @@ void loop() {
 //    else if(incomingByte == 128) {
 //      clearLights();
 //    }
-  }
-}
 
 void clearLights() {
   for(int i=0;i<36;i++){
@@ -108,31 +119,31 @@ void clearLights() {
 void pulseLights() {
   
   int loops = 0;
-  while (loops < 10)
+  while (loops < 20)
   {
-    red = red + 5;
-    blue = blue + 5;
-    for(int i=24; i<25; i++)
+    red = red + 2;
+    blue = blue + 2;
+    for(int i=0; i<36; i++)
     {
       pixels.setPixelColor(i, pixels.Color(red, green, blue));        
     }
     pixels.show();
-    delay(20);
+    delay(delay1);
     loops++;
   }
   loops = 0;
   if (action == 0) {
-    while (loops < 10)
+    while (loops < 20)
     {
-      red = red - 5;
-      blue = blue - 5;
-      for(int i=24; i<25; i++)
+      red = red - 2;
+      blue = blue - 2;
+      for(int i=0; i<36; i++)
       {
         pixels.setPixelColor(i, pixels.Color(red, green, blue));        
       }
       pixels.show();
       
-      for(int i=24; i<25; i++)
+      for(int i=0; i<36; i++)
       {
         pixels.setPixelColor(i, pixels.Color(0, 0, 0));        
       }
