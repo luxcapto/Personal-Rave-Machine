@@ -21,7 +21,6 @@ int action = 0;
 //Status Bytes
 boolean noteOn = false;
 boolean controlChange = false;
-boolean clearStatus = false;
 
 //Second Byte
 int note = 0;
@@ -61,13 +60,14 @@ void loop() {
             }
               else if (noteOn == false && note == 0){ // if we received a "note off", we wait for which note (databyte)      
                 clearLights();
+                
                 note = incomingByte;
                 note = 0;
                 velocity = 0;
-                clearStatus = true;
               }
                 else if (noteOn == true && note == 0){ // if we received a "note on", we wait for the note (databyte)
                   pulseLights();
+                  // sendLights();
                   note=incomingByte;
                 } 
                   else if (noteOn == true && note != 0){ // ...and then the velocity
@@ -116,6 +116,7 @@ void clearLights() {
   pixels.show(); 
 }
 
+
 void pulseLights() {
   
   int loops = 0;
@@ -128,31 +129,37 @@ void pulseLights() {
       pixels.setPixelColor(i, pixels.Color(red, green, blue));        
     }
     pixels.show();
-    delay(delay1);
+    delay(5);
     loops++;
-  }
-  loops = 0;
-  if (action == 0) {
-    while (loops < 20)
-    {
-      red = red - 2;
-      blue = blue - 2;
-      for(int i=0; i<36; i++)
-      {
-        pixels.setPixelColor(i, pixels.Color(red, green, blue));        
-      }
-      pixels.show();
-      
-      for(int i=0; i<36; i++)
-      {
-        pixels.setPixelColor(i, pixels.Color(0, 0, 0));        
-      }
-      pixels.show();
-      loops++;
-    }
   }
   red = 5;
   blue = 5;
+}
+
+void sendLights() {
+
+// changeColor();
+int loops = 0;
+while (loops < 20)
+{
+  red = red + 2;
+  blue = blue + 2;
+  for(int i=0; i<36; i++)
+  {
+    pixels.setPixelColor(i, pixels.Color(red, green, blue));        
+  }
+  pixels.show();
+  delay(100);
+  loops++;
+}
+// for(int i=0;i<36;i++){
+//           pixels.setPixelColor(i, pixels.Color(red, green, blue));
+// //          delay(5);
+// //          pixels.show();
+//         }
+//         pixels.show();
+
+
 }
 
 void changeColor()
