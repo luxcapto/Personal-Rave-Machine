@@ -1,12 +1,12 @@
 #include <Adafruit_NeoPixel.h>
-
+#include <SoftwareSerial.h>
 // #define PIN            12
 // #define NUMPIXELS      36
 // Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(24, 12, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel pixels2 = Adafruit_NeoPixel(12, 7, NEO_GRB + NEO_KHZ800);
-
+SoftwareSerial mySerial(4,5);
 
 byte incomingByte;
 
@@ -31,48 +31,64 @@ int controlValue = 0;
 
 void setup() {
   Serial.begin(115200);
+  mySerial.begin(9600);
+  mySerial.write("FUCKER");
   pixels.begin(); 
   pixels2.begin(); 
 }
 
 void loop() {
+
   if(Serial.available() > 0) {
 
     incomingByte = Serial.read();    
     
-    if (incomingByte == 144){        
-      noteOn = true;                 
+    // 144, 128, 176 always status bytes
+    if (incomingByte == 144){ //note on           
+      noteOn = true;
+      controlChange = false;                 
     }
-      else if (incomingByte == 128){    
+      else if (incomingByte == 128){ //note off
         noteOn = false;
+        controlChange = false; 
       }
-        else if (incomingByte == 176){
-          controlChange = true;
+        else if (incomingByte == 176){ //control change
+          noteOn = false;
+          controlChange = true; 
         }
-          else if (controlChange == true){
-            controlType = incomingByte;
-            delay1 = 1000;
+          else if (noteOn == false && note == 0){ //
+            clearLights();
+            // note = incomingByte; // not useful
+            // do something with this note off note
+            note = 0;
+            velocity = 0;
           }
-            else if (controlType == 17){
-              controlValue = incomingByte;
-              increment = controlValue - '0'; 
-            }
-              else if (noteOn == false && note == 0){ 
-                clearLights();
-                note = incomingByte;
+            else if (noteOn == true && note == 0){ 
+              // pulseLights();
+              sendLights();
+              note = incomingByte;
+              // do something with the note
+              // note = 0; //double flickers if uncommented?
+              velocity = 0;
+            } 
+              else if (noteOn == true && note != 0){ 
+                velocity = incomingByte;
+                // do something with the velocity
                 note = 0;
                 velocity = 0;
               }
-                else if (noteOn == true && note == 0){ 
-                  pulseLights();
-                  // sendLights();
-                  note=incomingByte;
-                } 
-                  else if (noteOn == true && note != 0){ 
-                    velocity=incomingByte;
-                    note=0;
-                    velocity=0;
-                    action=0;
+                else if(controlChange == true && controlType == 0) {
+                  controlType = incomingByte;
+                  // do something with the control type
+                  // controlType = 0;
+                  controlValue = 0;
+                }
+                  else if(controlChange == true && controlType != 0) {
+                    controlValue = incomingByte;
+                    // do something with the control value
+                    green = controlValue;
+                    // controlType = 0;
+                    controlValue = 0;
                   }
     else{
     }    
@@ -80,10 +96,14 @@ void loop() {
 }
 
 void clearLights() {
-  for(int i=0;i<36;i++){
+  for(int i=0;i<26;i++){
     pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+  }  
+  for(int i=0;i<12;i++){
+    pixels2.setPixelColor(i, pixels.Color(0, 0, 0));
   }
   pixels.show(); 
+  pixels2.show();
 }
 
 void pulseLights() {
@@ -107,11 +127,17 @@ void pulseLights() {
 }
 
 void sendLights() {
-// changeColor();
-  for(int i=0;i<36;i++){
+  // changeColor();
+  for(int i=0;i<26;i++){
     pixels.setPixelColor(i, pixels.Color(red, green, blue));
   }
+  for(int i=0;i<12;i++){
+    pixels2.setPixelColor(i, pixels.Color(red, green, blue));
+  }
   pixels.show();
+  pixels2.show();
+
+
 }
 
 void changeColor()
