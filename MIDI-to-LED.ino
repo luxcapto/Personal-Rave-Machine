@@ -1,148 +1,151 @@
 #include <Adafruit_NeoPixel.h>
-#include <SoftwareSerial.h>
-// #define PIN            12
-// #define NUMPIXELS      36
-// Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+#include <avr/power.h>
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(24, 12, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel pixels2 = Adafruit_NeoPixel(12, 7, NEO_GRB + NEO_KHZ800);
-SoftwareSerial mySerial(4,5);
+#define INNER_PIN            2
+#define OUTER_PIN            14
+#define STRIP_PIN            6
 
-byte incomingByte;
+#define INNER_PIXELS      12
+#define OUTER_PIXELS      24
+#define STRIP_PIXELS      144
 
-int red = 5;
-int green = 0;
-int blue = 5;
+Adafruit_NeoPixel innerPixels = Adafruit_NeoPixel(INNER_PIXELS, INNER_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel outerPixels = Adafruit_NeoPixel(OUTER_PIXELS, OUTER_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel stripPixels = Adafruit_NeoPixel(STRIP_PIXELS, STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
-int delay1 = 20;
-int delay2 = 750;
-int delay3 = 0;
-int increment = 0;
-int action = 0;
 
-boolean noteOn = false; 
-boolean controlChange = false;
-
-int note = 0;
-int controlType = 0;
-
-int velocity = 0;
-int controlValue = 0;
+int lastRed = 0;
+int lastBlue = 0;
+int lastGreen = 0;
+int cc24 = 0;
+byte noteReceived = 0;
+bool off = false;
 
 void setup() {
-  Serial.begin(115200);
-  mySerial.begin(9600);
-  mySerial.write("FUCKER");
-  pixels.begin(); 
-  pixels2.begin(); 
+  Serial.begin(9600);
+  innerPixels.begin();
+  outerPixels.begin();
+  stripPixels.begin();
+  clearLights();
+  usbMIDI.setHandleNoteOff(onNoteOff);
+  usbMIDI.setHandleNoteOn(onNoteOn);
+  usbMIDI.setHandleControlChange(onControlChange);
 }
 
 void loop() {
+  usbMIDI.read(1);
+}
 
-  if(Serial.available() > 0) {
+void onNoteOn(byte channel, byte note, byte velocity) {
+  outerLightsOn(lastRed, lastGreen, lastBlue);
+  innerLightsOn(lastRed, lastGreen, lastBlue);
+  stripLightsOn(lastRed, lastGreen, lastBlue);
+  off = false;
+  noteReceived = note;
+}
 
-    incomingByte = Serial.read();    
-    
-    // 144, 128, 176 always status bytes
-    if (incomingByte == 144){ //note on           
-      noteOn = true;
-      controlChange = false;                 
-    }
-      else if (incomingByte == 128){ //note off
-        noteOn = false;
-        controlChange = false; 
-      }
-        else if (incomingByte == 176){ //control change
-          noteOn = false;
-          controlChange = true; 
-        }
-          else if (noteOn == false && note == 0){ //
-            clearLights();
-            // note = incomingByte; // not useful
-            // do something with this note off note
-            note = 0;
-            velocity = 0;
-          }
-            else if (noteOn == true && note == 0){ 
-              // pulseLights();
-              sendLights();
-              note = incomingByte;
-              // do something with the note
-              // note = 0; //double flickers if uncommented?
-              velocity = 0;
-            } 
-              else if (noteOn == true && note != 0){ 
-                velocity = incomingByte;
-                // do something with the velocity
-                note = 0;
-                velocity = 0;
-              }
-                else if(controlChange == true && controlType == 0) {
-                  controlType = incomingByte;
-                  // do something with the control type
-                  // controlType = 0;
-                  controlValue = 0;
-                }
-                  else if(controlChange == true && controlType != 0) {
-                    controlValue = incomingByte;
-                    // do something with the control value
-                    green = controlValue;
-                    // controlType = 0;
-                    controlValue = 0;
-                  }
-    else{
-    }    
+void onNoteOff(byte channel, byte note, byte velocity) {
+  clearLights();  
+  off = true;
+}
+
+void onControlChange(byte channel, byte controlType, byte value) {
+  
+  cc24 = (int)value;
+  if(controlType == 20 && off == false) {
+    outerLightsOn((value*2), lastGreen, lastBlue);
+    innerLightsOn((value*2), lastGreen, lastBlue);
+    stripLightsOn((value*2), lastGreen, lastBlue);
+  } else if (controlType == 20 && off == true) {
+    lastRed = value*2;
   }
+  
+  else if (controlType == 21 && off == false) {
+      outerLightsOn(lastRed, (value*2), lastBlue);
+      innerLightsOn(lastRed, (value*2), lastBlue);
+      stripLightsOn(lastRed, (value*2), lastBlue);
+  } else if (controlType == 21 && off == true) {
+    lastGreen = value*2;
+  }
+  
+  else if (controlType == 22 && off == false) {
+      outerLightsOn(lastRed, lastGreen, (value*2));
+      innerLightsOn(lastRed, lastGreen, (value*2));
+      stripLightsOn(lastRed, lastGreen, (value*2));
+  } else if (controlType == 22 && off == true) {
+    lastBlue = value*2;
+  }
+
+  
+
+
+}
+
+void innerLightsOn(int red, int green, int blue) {
+  
+  for(int i=0;i<INNER_PIXELS;i++){
+    innerPixels.setPixelColor(i, innerPixels.Color(red, green, blue));
+  }
+  
+  innerPixels.show();
+  
+  lastRed = red;
+  lastGreen = green;
+  lastBlue = blue;
+}
+  
+void outerLightsOn(int red, int green, int blue) {
+ 
+  for(int i=0;i<OUTER_PIXELS;i++){
+    outerPixels.setPixelColor(i, outerPixels.Color(red, green, blue)); 
+  }
+    
+  outerPixels.show(); 
+  
+  lastRed = red;
+  lastGreen = green;
+  lastBlue = blue;
+}
+
+void stripLightsOn(int red, int green, int blue) {
+  if(noteReceived == 54) {
+    int otherSide = 0;
+    for(int i=72;i<STRIP_PIXELS;i++){
+      stripPixels.setPixelColor(i, stripPixels.Color(red, green, blue));
+      stripPixels.setPixelColor(otherSide, stripPixels.Color(red, green, blue));
+      if(otherside<71) {
+        otherside++;
+      }
+      delay(cc24);
+      stripPixels.show();
+    }
+  }
+  
+  
+//  if(noteReceived == 54) {
+//    stripPixels.show();
+//  }
+  
+  lastRed = red;
+  lastGreen = green;
+  lastBlue = blue;
 }
 
 void clearLights() {
-  for(int i=0;i<26;i++){
-    pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+  
+  for(int i=0;i<INNER_PIXELS;i++) {
+    innerPixels.setPixelColor(i, innerPixels.Color(0,0,0)); 
   }  
-  for(int i=0;i<12;i++){
-    pixels2.setPixelColor(i, pixels.Color(0, 0, 0));
+    
+  for(int i=0;i<OUTER_PIXELS;i++) {
+    outerPixels.setPixelColor(i, outerPixels.Color(0,0,0));
   }
-  pixels.show(); 
-  pixels2.show();
-}
-
-void pulseLights() {
-  int loops = 0;
-  while (loops < 20)
-  {
-    red = red + 2;
-    blue = blue + 2;
-    for(int i=0; i<36; i++)
-    {
-      pixels.setPixelColor(i, pixels.Color(red, green, blue));
-      pixels2.setPixelColor(i, pixels.Color(red, green, blue));
-    }
-    pixels.show();
-    pixels2.show();
-    delay(5);
-    loops++;
+  
+  for(int i=0;i<STRIP_PIXELS;i++){
+    stripPixels.setPixelColor(i, stripPixels.Color(0, 0, 0));
   }
-  red = 5;
-  blue = 5;
-}
-
-void sendLights() {
-  // changeColor();
-  for(int i=0;i<26;i++){
-    pixels.setPixelColor(i, pixels.Color(red, green, blue));
-  }
-  for(int i=0;i<12;i++){
-    pixels2.setPixelColor(i, pixels.Color(red, green, blue));
-  }
-  pixels.show();
-  pixels2.show();
-
-
-}
-
-void changeColor()
-{
-  red = random(0,255);
-  green = random(0,255);
-  blue = random(0,255);
+  
+  innerPixels.show();
+  outerPixels.show(); 
+  stripPixels.show();
 }
