@@ -20,6 +20,7 @@ int lastGreen = 0;
 int cc24 = 0;
 byte noteReceived = 0;
 bool off = false;
+bool interrupted;
 
 void setup() {
   Serial.begin(9600);
@@ -41,11 +42,13 @@ void onNoteOn(byte channel, byte note, byte velocity) {
   innerLightsOn(lastRed, lastGreen, lastBlue);
   stripLightsOn(lastRed, lastGreen, lastBlue);
   off = false;
+  interrupted = true;
   noteReceived = note;
 }
 
 void onNoteOff(byte channel, byte note, byte velocity) {
-  clearLights();  
+  clearLights();
+  interrupted = true;  
   off = true;
 }
 
@@ -108,19 +111,19 @@ void outerLightsOn(int red, int green, int blue) {
 }
 
 void stripLightsOn(int red, int green, int blue) {
+
   if(noteReceived == 54) {
-    int otherSide = 0;
-    for(int i=72;i<STRIP_PIXELS;i++){
+    int otherSide = 72;
+    for(int i=73;i>0;i--) {
       stripPixels.setPixelColor(i, stripPixels.Color(red, green, blue));
       stripPixels.setPixelColor(otherSide, stripPixels.Color(red, green, blue));
-      if(otherside<71) {
-        otherside++;
+      if(otherSide<144) {
+        otherSide++;
       }
-      delay(cc24);
       stripPixels.show();
     }
   }
-  
+
   
 //  if(noteReceived == 54) {
 //    stripPixels.show();
