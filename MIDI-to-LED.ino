@@ -17,10 +17,8 @@ Adafruit_NeoPixel stripPixels = Adafruit_NeoPixel(STRIP_PIXELS, STRIP_PIN, NEO_G
 int lastRed = 0;
 int lastBlue = 0;
 int lastGreen = 0;
-int cc24 = 0;
 byte noteReceived = 0;
 bool off = false;
-bool interrupted;
 
 void setup() {
   Serial.begin(9600);
@@ -42,46 +40,39 @@ void onNoteOn(byte channel, byte note, byte velocity) {
   innerLightsOn(lastRed, lastGreen, lastBlue);
   stripLightsOn(lastRed, lastGreen, lastBlue);
   off = false;
-  interrupted = true;
   noteReceived = note;
 }
 
 void onNoteOff(byte channel, byte note, byte velocity) {
   clearLights();
-  interrupted = true;  
   off = true;
 }
 
 void onControlChange(byte channel, byte controlType, byte value) {
   
-  cc24 = (int)value;
-  if(controlType == 20 && off == false) {
+  if(controlType == 20 && !off) {
     outerLightsOn((value*2), lastGreen, lastBlue);
     innerLightsOn((value*2), lastGreen, lastBlue);
     stripLightsOn((value*2), lastGreen, lastBlue);
-  } else if (controlType == 20 && off == true) {
+  } else if (controlType == 20 && off) {
     lastRed = value*2;
   }
   
-  else if (controlType == 21 && off == false) {
+  else if (controlType == 21 && !off) {
       outerLightsOn(lastRed, (value*2), lastBlue);
       innerLightsOn(lastRed, (value*2), lastBlue);
       stripLightsOn(lastRed, (value*2), lastBlue);
-  } else if (controlType == 21 && off == true) {
+  } else if (controlType == 21 && off) {
     lastGreen = value*2;
   }
   
-  else if (controlType == 22 && off == false) {
+  else if (controlType == 22 && !off) {
       outerLightsOn(lastRed, lastGreen, (value*2));
       innerLightsOn(lastRed, lastGreen, (value*2));
       stripLightsOn(lastRed, lastGreen, (value*2));
-  } else if (controlType == 22 && off == true) {
+  } else if (controlType == 22 && off) {
     lastBlue = value*2;
   }
-
-  
-
-
 }
 
 void innerLightsOn(int red, int green, int blue) {
@@ -113,21 +104,11 @@ void outerLightsOn(int red, int green, int blue) {
 void stripLightsOn(int red, int green, int blue) {
 
   if(noteReceived == 54) {
-    int otherSide = 72;
-    for(int i=73;i>0;i--) {
-      stripPixels.setPixelColor(i, stripPixels.Color(red, green, blue));
-      stripPixels.setPixelColor(otherSide, stripPixels.Color(red, green, blue));
-      if(otherSide<144) {
-        otherSide++;
-      }
-      stripPixels.show();
-    }
+    for(int i=0;i<STRIP_PIXELS;i++) {
+      stripPixels.setPixelColor(i, stripPixels.Color(red, green, blue)); 
+    } 
+    stripPixels.show();
   }
-
-  
-//  if(noteReceived == 54) {
-//    stripPixels.show();
-//  }
   
   lastRed = red;
   lastGreen = green;
