@@ -14,9 +14,9 @@ Adafruit_NeoPixel outerPixels = Adafruit_NeoPixel(OUTER_PIXELS, OUTER_PIN, NEO_G
 Adafruit_NeoPixel stripPixels = Adafruit_NeoPixel(STRIP_PIXELS, STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
 
-int lastRed = 0;
-int lastBlue = 0;
-int lastGreen = 0;
+int ringLastRed = 0;
+int ringLastBlue = 0;
+int ringLastGreen = 0;
 byte noteReceived = 0;
 byte noteOffReceived = 0;
 bool off = false;
@@ -39,21 +39,19 @@ void loop() {
 
 void onNoteOn(byte channel, byte note, byte velocity) {
   // 
-  if (note == 33) {
-    ringLightsOn(lastRed, lastGreen, lastBlue);
-  }
-  if(note == 54) {
-    stripLightsOn(lastRed, lastGreen, lastBlue);
+  if (note == 51) {
+    ringLightsOn(ringLastRed, ringLastGreen, ringLastBlue);
+  } else if(note == 54) {
+    stripLightsOn(ringLastRed, ringLastGreen, ringLastBlue);
   }
   off = false;
   noteReceived = note;
 }
 
 void onNoteOff(byte channel, byte note, byte velocity) {
-  if (note == 33) {
+  if (note == 51) {
     clearRings();
-  }
-  if (note == 54) {
+  } else if (note == 54) {
     clearStrip();
   }
   off = true;
@@ -63,28 +61,30 @@ void onNoteOff(byte channel, byte note, byte velocity) {
 void onControlChange(byte channel, byte controlType, byte value) {
   
   if(controlType == 20 && !off) {
-    if(noteOffReceived == 33) {
-      ringLightsOn((value*2), lastGreen, lastBlue);
-    }
-    if(noteOffReceived == 54) {
-      stripLightsOn((value*2), lastGreen, lastBlue);
-    }
+    if(noteOffReceived == 51 ) {
+      ringLightsOn((value*2), ringLastGreen, ringLastBlue);
+    } else if (noteOffReceived == 54) {
+            stripLightsOn((value*2), ringLastGreen, ringLastBlue);
+    }  
+//    if(noteOffReceived == 54) {
+//      stripLightsOn((value*2), ringLastGreen, ringLastBlue);
+//    }
   } else if (controlType == 20 && off) {
-    lastRed = value*2;
+    ringLastRed = value*2;
   }
   
 //  else if (controlType == 21 && !off) {
-//      ringLightsOn(lastRed, (value*2), lastBlue);
-//      stripLightsOn(lastRed, (value*2), lastBlue);
+//      ringLightsOn(ringLastRed, (value*2), ringLastBlue);
+//      stripLightsOn(ringLastRed, (value*2), ringLastBlue);
 //  } else if (controlType == 21 && off) {
-//    lastGreen = value*2;
+//    ringLastGreen = value*2;
 //  }
 //  
 //  else if (controlType == 22 && !off) {
-//      ringLightsOn(lastRed, lastGreen, (value*2));
-//      stripLightsOn(lastRed, lastGreen, (value*2));
+//      ringLightsOn(ringLastRed, ringLastGreen, (value*2));
+//      stripLightsOn(ringLastRed, ringLastGreen, (value*2));
 //  } else if (controlType == 22 && off) {
-//    lastBlue = value*2;
+//    ringLastBlue = value*2;
 //  }
 }
 
@@ -96,9 +96,9 @@ void innerLightsOn(int red, int green, int blue) {
   
   innerPixels.show();
   
-  lastRed = red;
-  lastGreen = green;
-  lastBlue = blue;
+  ringLastRed = red;
+  ringLastGreen = green;
+  ringLastBlue = blue;
 }
   
 void outerLightsOn(int red, int green, int blue) {
@@ -109,9 +109,9 @@ void outerLightsOn(int red, int green, int blue) {
     
   outerPixels.show(); 
   
-  lastRed = red;
-  lastGreen = green;
-  lastBlue = blue;
+  ringLastRed = red;
+  ringLastGreen = green;
+  ringLastBlue = blue;
 }
 
 void ringLightsOn(int red, int green, int blue) {
@@ -126,9 +126,9 @@ void ringLightsOn(int red, int green, int blue) {
   innerPixels.show(); 
   outerPixels.show(); 
   
-  lastRed = red;
-  lastGreen = green;
-  lastBlue = blue;
+  ringLastRed = red;
+  ringLastGreen = green;
+  ringLastBlue = blue;
 }
 
 void stripLightsOn(int red, int green, int blue) {
@@ -139,9 +139,9 @@ void stripLightsOn(int red, int green, int blue) {
   
   stripPixels.show();
   
-  lastRed = red;
-  lastGreen = green;
-  lastBlue = blue;
+  ringLastRed = red;
+  ringLastGreen = green;
+  ringLastBlue = blue;
   
 }
 
