@@ -53,7 +53,7 @@ void loop() {
 void onNoteOn(byte channel, byte note, byte velocity) {
   if (note == 51) {
     innerLightsOn(innerRingLastRed, innerRingLastGreen, innerRingLastBlue);
-  } else if (note == 00) {
+  } else if (note == 46) {
     outerLightsOn(outerRingLastRed, outerRingLastGreen, outerRingLastBlue);
   } 
   else if(note == 54) {
@@ -66,7 +66,7 @@ void onNoteOn(byte channel, byte note, byte velocity) {
 void onNoteOff(byte channel, byte note, byte velocity) {
   if (note == 51) {
     clearInnerLights();
-  } else if (note == 00) {
+  } else if (note == 46) {
     clearOuterLights();
   } else if (note == 54) {
     clearStrip();
@@ -78,6 +78,7 @@ void onNoteOff(byte channel, byte note, byte velocity) {
 void onControlChange(byte channel, byte controlType, byte value) {
   
   // **** INNER LIGHTS ****
+  
   if(controlType == 20) {
     if(noteReceived == 51) {
       innerRingLastRed = (int)value*2;
@@ -96,9 +97,9 @@ void onControlChange(byte channel, byte controlType, byte value) {
         Serial.println("Inner ring green updated to");
         Serial.println(innerRingLastGreen);
       } else {
-        innerRingLastGreen = (int)value*2;
-        Serial.println("Inner ring green updated to");
-        Serial.println(innerRingLastGreen);
+          innerRingLastGreen = (int)value*2;
+          Serial.println("Inner ring green updated to");
+          Serial.println(innerRingLastGreen);
       }
   } else if (controlType == 22) {
       if(noteReceived == 51) {
@@ -107,44 +108,82 @@ void onControlChange(byte channel, byte controlType, byte value) {
         Serial.println("Inner ring blue updated to");
         Serial.println(innerRingLastBlue);
       } else {
-        innerRingLastBlue = (int)value*2;
-        Serial.println("Inner ring blue updated to");
-        Serial.println(innerRingLastBlue);
+          innerRingLastBlue = (int)value*2;
+          Serial.println("Inner ring blue updated to");
+          Serial.println(innerRingLastBlue);
       }
+      
   // **** OUTER LIGHTS ****
+  
   } else if(controlType == 23) {
-    if(noteReceived == 51) {
-      innerRingLastRed = (int)value*2;
-      innerLightsOn(innerRingLastRed, innerRingLastGreen, innerRingLastBlue);
-      Serial.println("Inner ring red updated to");
-      Serial.println(innerRingLastRed);
+    if(noteReceived == 46) {
+      outerRingLastRed = (int)value*2;
+      outerLightsOn(outerRingLastRed, outerRingLastGreen, outerRingLastBlue);
+      Serial.println("Outer ring red updated to");
+      Serial.println(outerRingLastRed);
     } else {
-        innerRingLastRed = (int)value*2;
-        Serial.println("Inner ring red updated to");
-        Serial.println(innerRingLastRed);
+        outerRingLastRed = (int)value*2;
+        Serial.println("Outer ring red updated to");
+        Serial.println(outerRingLastRed);
     }
   } else if (controlType == 24) {
-      if(noteReceived == 51) {
-        innerRingLastGreen = (int)value*2;
-        innerLightsOn(innerRingLastRed, innerRingLastGreen, innerRingLastBlue);
-        Serial.println("Inner ring green updated to");
-        Serial.println(innerRingLastGreen);
+      if(noteReceived == 46) {
+        outerRingLastGreen = (int)value*2;
+        outerLightsOn(outerRingLastRed, outerRingLastGreen, outerRingLastBlue);
+        Serial.println("Outer ring green updated to");
+        Serial.println(outerRingLastGreen);
       } else {
-        innerRingLastGreen = (int)value*2;
-        Serial.println("Inner ring green updated to");
-        Serial.println(innerRingLastGreen);
+          outerRingLastGreen = (int)value*2;
+          Serial.println("Outer ring green updated to");
+          Serial.println(outerRingLastGreen);
       }
   } else if (controlType == 25) {
-      if(noteReceived == 51) {
-        innerRingLastBlue = (int)value*2;
-        innerLightsOn(innerRingLastRed, innerRingLastGreen, innerRingLastBlue);
-        Serial.println("Inner ring blue updated to");
-        Serial.println(innerRingLastBlue);
+      if(noteReceived == 46) {
+        outerRingLastBlue = (int)value*2;
+        outerLightsOn(outerRingLastRed, outerRingLastGreen, outerRingLastBlue);
+        Serial.println("Outer ring blue updated to");
+        Serial.println(outerRingLastBlue);
       } else {
-        innerRingLastBlue = (int)value*2;
-        Serial.println("Inner ring blue updated to");
-        Serial.println(innerRingLastBlue);
+          outerRingLastBlue = (int)value*2;
+          Serial.println("Outer ring blue updated to");
+          Serial.println(outerRingLastBlue);
       }
+  // **** STRIP LIGHTS ****    
+      
+  } else if(controlType == 26) {
+    if(noteReceived == 54) {
+      stripLastRed = (int)value*2;
+      stripLightsOn(stripLastRed, stripLastGreen, stripLastBlue);
+      Serial.println("Strip red updated to");
+      Serial.println(stripLastRed);
+    } else {
+        stripLastRed = (int)value*2;
+        Serial.println("Strip red updated to");
+        Serial.println(stripLastRed);
+    }
+  } else if (controlType == 27) {
+      if(noteReceived == 54) {
+        stripLastGreen = (int)value*2;
+        stripLightsOn(stripLastRed, stripLastGreen, stripLastBlue);
+        Serial.println("Strip green updated to");
+        Serial.println(stripLastGreen);
+      } else {
+          stripLastGreen = (int)value*2;
+          Serial.println("Strip green updated to");
+          Serial.println(stripLastGreen);
+      }
+  } else if (controlType == 28) {
+      if(noteReceived == 54) {
+        stripLastBlue = (int)value*2;
+        stripLightsOn(stripLastRed, stripLastGreen, stripLastBlue);
+        Serial.println("Strip blue updated to");
+        Serial.println(stripLastBlue);
+      } else {
+          stripLastBlue = (int)value*2;
+          Serial.println("Strip blue updated to");
+          Serial.println(stripLastBlue);
+      }
+  }
   
   
   
