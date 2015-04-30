@@ -18,6 +18,7 @@ int lastRed = 0;
 int lastBlue = 0;
 int lastGreen = 0;
 byte noteReceived = 0;
+byte noteOffReceived = 0;
 bool off = false;
 
 void setup() {
@@ -25,7 +26,8 @@ void setup() {
   innerPixels.begin();
   outerPixels.begin();
   stripPixels.begin();
-  clearLights();
+  clearRings();
+  clearStrip();
   usbMIDI.setHandleNoteOff(onNoteOff);
   usbMIDI.setHandleNoteOn(onNoteOn);
   usbMIDI.setHandleControlChange(onControlChange);
@@ -38,11 +40,7 @@ void loop() {
 void onNoteOn(byte channel, byte note, byte velocity) {
   // 
   if (note == 33) {
-    outerLightsOn(lastRed, lastGreen, lastBlue);
-  }
-  if (note == 00)
-  {
-    innerLightsOn(lastRed, lastGreen, lastBlue);
+    ringLightsOn(lastRed, lastGreen, lastBlue);
   }
   if(note == 54) {
     stripLightsOn(lastRed, lastGreen, lastBlue);
@@ -52,35 +50,42 @@ void onNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void onNoteOff(byte channel, byte note, byte velocity) {
-  clearLights();
+  if (note == 33) {
+    clearRings();
+  }
+  if (note == 54) {
+    clearStrip();
+  }
   off = true;
+  noteOffReceived = note;
 }
 
 void onControlChange(byte channel, byte controlType, byte value) {
   
   if(controlType == 20 && !off) {
-    outerLightsOn((value*2), lastGreen, lastBlue);
-    innerLightsOn((value*2), lastGreen, lastBlue);
-    stripLightsOn((value*2), lastGreen, lastBlue);
+    if(noteOffReceived == 33) {
+      ringLightsOn((value*2), lastGreen, lastBlue);
+    }
+    if(noteOffReceived == 54) {
+      stripLightsOn((value*2), lastGreen, lastBlue);
+    }
   } else if (controlType == 20 && off) {
     lastRed = value*2;
   }
   
-  else if (controlType == 21 && !off) {
-      outerLightsOn(lastRed, (value*2), lastBlue);
-      innerLightsOn(lastRed, (value*2), lastBlue);
-      stripLightsOn(lastRed, (value*2), lastBlue);
-  } else if (controlType == 21 && off) {
-    lastGreen = value*2;
-  }
-  
-  else if (controlType == 22 && !off) {
-      outerLightsOn(lastRed, lastGreen, (value*2));
-      innerLightsOn(lastRed, lastGreen, (value*2));
-      stripLightsOn(lastRed, lastGreen, (value*2));
-  } else if (controlType == 22 && off) {
-    lastBlue = value*2;
-  }
+//  else if (controlType == 21 && !off) {
+//      ringLightsOn(lastRed, (value*2), lastBlue);
+//      stripLightsOn(lastRed, (value*2), lastBlue);
+//  } else if (controlType == 21 && off) {
+//    lastGreen = value*2;
+//  }
+//  
+//  else if (controlType == 22 && !off) {
+//      ringLightsOn(lastRed, lastGreen, (value*2));
+//      stripLightsOn(lastRed, lastGreen, (value*2));
+//  } else if (controlType == 22 && off) {
+//    lastBlue = value*2;
+//  }
 }
 
 void innerLightsOn(int red, int green, int blue) {
@@ -109,6 +114,23 @@ void outerLightsOn(int red, int green, int blue) {
   lastBlue = blue;
 }
 
+void ringLightsOn(int red, int green, int blue) {
+  for(int i=0;i<INNER_PIXELS;i++){
+    innerPixels.setPixelColor(i, innerPixels.Color(red, green, blue));
+  }
+    
+  for(int i=0;i<OUTER_PIXELS;i++){
+    outerPixels.setPixelColor(i, outerPixels.Color(red, green, blue)); 
+  }
+ 
+  innerPixels.show(); 
+  outerPixels.show(); 
+  
+  lastRed = red;
+  lastGreen = green;
+  lastBlue = blue;
+}
+
 void stripLightsOn(int red, int green, int blue) {
   
   for(int i=0;i<STRIP_PIXELS;i++) {
@@ -123,23 +145,18 @@ void stripLightsOn(int red, int green, int blue) {
   
 }
 
-void clearInnerLights() {
+void clearRings() {
   
   for(int i=0;i<INNER_PIXELS;i++) {
     innerPixels.setPixelColor(i, innerPixels.Color(0,0,0)); 
   } 
-  
-  innerPixels.show();
-  
-}
-
-void clearOuterLights() {
-  
   for(int i=0;i<OUTER_PIXELS;i++) {
     outerPixels.setPixelColor(i, outerPixels.Color(0,0,0));
   }
  
+  innerPixels.show();
   outerPixels.show(); 
+
   
 }
 
