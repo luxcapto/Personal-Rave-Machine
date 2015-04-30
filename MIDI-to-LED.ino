@@ -36,9 +36,17 @@ void loop() {
 }
 
 void onNoteOn(byte channel, byte note, byte velocity) {
-  outerLightsOn(lastRed, lastGreen, lastBlue);
-  innerLightsOn(lastRed, lastGreen, lastBlue);
-  stripLightsOn(lastRed, lastGreen, lastBlue);
+  // 
+  if (note == 33) {
+    outerLightsOn(lastRed, lastGreen, lastBlue);
+  }
+  if (note == 00)
+  {
+    innerLightsOn(lastRed, lastGreen, lastBlue);
+  }
+  if(note == 54) {
+    stripLightsOn(lastRed, lastGreen, lastBlue);
+  }
   off = false;
   noteReceived = note;
 }
@@ -102,34 +110,43 @@ void outerLightsOn(int red, int green, int blue) {
 }
 
 void stripLightsOn(int red, int green, int blue) {
-
-  if(noteReceived == 54) {
-    for(int i=0;i<STRIP_PIXELS;i++) {
+  
+  for(int i=0;i<STRIP_PIXELS;i++) {
       stripPixels.setPixelColor(i, stripPixels.Color(red, green, blue)); 
-    } 
-    stripPixels.show();
-  }
+  } 
+  
+  stripPixels.show();
   
   lastRed = red;
   lastGreen = green;
   lastBlue = blue;
+  
 }
 
-void clearLights() {
+void clearInnerLights() {
   
   for(int i=0;i<INNER_PIXELS;i++) {
     innerPixels.setPixelColor(i, innerPixels.Color(0,0,0)); 
-  }  
-    
+  } 
+  
+  innerPixels.show();
+  
+}
+
+void clearOuterLights() {
+  
   for(int i=0;i<OUTER_PIXELS;i++) {
     outerPixels.setPixelColor(i, outerPixels.Color(0,0,0));
   }
+ 
+  outerPixels.show(); 
   
+}
+
+void clearStrip() {
   for(int i=0;i<STRIP_PIXELS;i++){
     stripPixels.setPixelColor(i, stripPixels.Color(0, 0, 0));
-  }
-  
-  innerPixels.show();
-  outerPixels.show(); 
+  } 
   stripPixels.show();
+  
 }
