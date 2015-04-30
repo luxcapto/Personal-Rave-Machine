@@ -35,7 +35,7 @@ byte noteOffReceived = 0;
 bool off = false;
 
 void setup() {
-  Serial.begin(9600);
+//  Serial.begin(9600);
   innerPixels.begin();
   outerPixels.begin();
   stripPixels.begin();
@@ -184,25 +184,6 @@ void onControlChange(byte channel, byte controlType, byte value) {
           Serial.println(stripLastBlue);
       }
   }
-  
-  
-  
-//  
-//    if (noteOffReceived == 54) {
-//        stripLastRed = (int)value*2;
-//        stripLightsOn(stripLastRed, stripLastGreen, stripLastBlue);
-//        Serial.println("Strip red");
-//        Serial.println(stripLastRed);
-//
-//
-//    }
-//  }
-// 
-//   if(noteOnReceived == 51 && controlType == 20 && !off) {
-//     
-//   } 
-// 
-
 }
 
 void innerLightsOn(int red, int green, int blue) {
