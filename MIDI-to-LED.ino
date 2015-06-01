@@ -1,17 +1,20 @@
 #include <Adafruit_NeoPixel.h>
 #include <avr/power.h>
 
-#define INNER_PIN            2
-#define OUTER_PIN            14
-#define STRIP_PIN            6
+#define INNER_RING_PIN         2
+#define OUTER_RING_PIN         14
+#define LOWER_STRIP_PIN        6
+#define UPPER_STRIP_PIN        20
 
-#define INNER_PIXELS      12
-#define OUTER_PIXELS      24
-#define STRIP_PIXELS      144
+#define INNER_RING_PIXELS      12
+#define OUTER_RING_PIXELS      24
+#define LOWER_STRIP_PIXELS     72
+#define UPPER_STRIP_PIXELS     72
 
-Adafruit_NeoPixel innerPixels = Adafruit_NeoPixel(INNER_PIXELS, INNER_PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel outerPixels = Adafruit_NeoPixel(OUTER_PIXELS, OUTER_PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel stripPixels = Adafruit_NeoPixel(STRIP_PIXELS, STRIP_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel innerRing = Adafruit_NeoPixel(INNER_RING_PIXELS, INNER_RING_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel outerRing = Adafruit_NeoPixel(OUTER_RING_PIXELS, OUTER_RING_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel lowerStrip = Adafruit_NeoPixel(LOWER_STRIP_PIXELS, LOWER_STRIP_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel upperStrip = Adafruit_NeoPixel(UPPER_STRIP_PIXELS, UPPER_STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
 
 int ringLastRed = 0;
@@ -36,14 +39,19 @@ bool off = false;
 
 void setup() {
 //  Serial.begin(9600);
-  innerPixels.begin();
-  outerPixels.begin();
-  stripPixels.begin();
-  clearRings();
-  clearStrip();
+  innerRing.begin();
+  outerRing.begin();
+  lowerStrip.begin();
+  upperStrip.begin();
+
   usbMIDI.setHandleNoteOff(onNoteOff);
   usbMIDI.setHandleNoteOn(onNoteOn);
   usbMIDI.setHandleControlChange(onControlChange);
+  
+  stripLightsOn(55,55,55);
+  delay(2500);
+  clearRings();
+  clearStrip();
 }
 
 void loop() {
@@ -188,11 +196,11 @@ void onControlChange(byte channel, byte controlType, byte value) {
 
 void innerLightsOn(int red, int green, int blue) {
   
-  for(int i=0;i<INNER_PIXELS;i++){
-    innerPixels.setPixelColor(i, innerPixels.Color(red, green, blue));
+  for(int i=0;i<INNER_RING_PIXELS;i++){
+    innerRing.setPixelColor(i, innerRing.Color(red, green, blue));
   }
   
-  innerPixels.show();
+  innerRing.show();
   
   ringLastRed = red;
   ringLastGreen = green;
@@ -201,11 +209,11 @@ void innerLightsOn(int red, int green, int blue) {
   
 void outerLightsOn(int red, int green, int blue) {
  
-  for(int i=0;i<OUTER_PIXELS;i++){
-    outerPixels.setPixelColor(i, outerPixels.Color(red, green, blue)); 
+  for(int i=0;i<OUTER_RING_PIXELS;i++){
+    outerRing.setPixelColor(i, outerRing.Color(red, green, blue)); 
   }
     
-  outerPixels.show(); 
+  outerRing.show(); 
   
   ringLastRed = red;
   ringLastGreen = green;
@@ -213,16 +221,16 @@ void outerLightsOn(int red, int green, int blue) {
 }
 
 void ringLightsOn(int red, int green, int blue) {
-  for(int i=0;i<INNER_PIXELS;i++){
-    innerPixels.setPixelColor(i, innerPixels.Color(red, green, blue));
+  for(int i=0;i<INNER_RING_PIXELS;i++){
+    innerRing.setPixelColor(i, innerRing.Color(red, green, blue));
   }
     
-  for(int i=0;i<OUTER_PIXELS;i++){
-    outerPixels.setPixelColor(i, outerPixels.Color(red, green, blue)); 
+  for(int i=0;i<OUTER_RING_PIXELS;i++){
+    outerRing.setPixelColor(i, outerRing.Color(red, green, blue)); 
   }
  
-  innerPixels.show(); 
-  outerPixels.show(); 
+  innerRing.show(); 
+  outerRing.show(); 
   
   ringLastRed = red;
   ringLastGreen = green;
@@ -231,11 +239,16 @@ void ringLightsOn(int red, int green, int blue) {
 
 void stripLightsOn(int red, int green, int blue) {
   
-  for(int i=0;i<STRIP_PIXELS;i++) {
-      stripPixels.setPixelColor(i, stripPixels.Color(red, green, blue)); 
+  for(int i=0;i<LOWER_STRIP_PIXELS;i++) {
+      lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue)); 
+  } 
+
+  for(int i=0;i<UPPER_STRIP_PIXELS;i++) {
+      upperStrip.setPixelColor(i, upperStrip.Color(red, green, blue)); 
   } 
   
-  stripPixels.show();
+  lowerStrip.show();
+  upperStrip.show();
   
   stripLastRed = red;
   stripLastGreen = green;
@@ -245,43 +258,48 @@ void stripLightsOn(int red, int green, int blue) {
 
 void clearInnerLights() {
   
-  for(int i=0;i<INNER_PIXELS;i++) {
-    innerPixels.setPixelColor(i, innerPixels.Color(0,0,0)); 
+  for(int i=0;i<INNER_RING_PIXELS;i++) {
+    innerRing.setPixelColor(i, innerRing.Color(0,0,0)); 
   } 
   
-  innerPixels.show();
+  innerRing.show();
   
 }
 
 void clearOuterLights() {
   
-  for(int i=0;i<OUTER_PIXELS;i++) {
-    outerPixels.setPixelColor(i, outerPixels.Color(0,0,0));
+  for(int i=0;i<OUTER_RING_PIXELS;i++) {
+    outerRing.setPixelColor(i, outerRing.Color(0,0,0));
   }
  
-  outerPixels.show(); 
+  outerRing.show(); 
   
 }
 
 void clearRings() {
   
-  for(int i=0;i<INNER_PIXELS;i++) {
-    innerPixels.setPixelColor(i, innerPixels.Color(0,0,0)); 
+  for(int i=0;i<INNER_RING_PIXELS;i++) {
+    innerRing.setPixelColor(i, innerRing.Color(0,0,0)); 
   } 
-  for(int i=0;i<OUTER_PIXELS;i++) {
-    outerPixels.setPixelColor(i, outerPixels.Color(0,0,0));
+  for(int i=0;i<OUTER_RING_PIXELS;i++) {
+    outerRing.setPixelColor(i, outerRing.Color(0,0,0));
   }
  
-  innerPixels.show();
-  outerPixels.show(); 
+  innerRing.show();
+  outerRing.show(); 
 
   
 }
 
 void clearStrip() {
-  for(int i=0;i<STRIP_PIXELS;i++){
-    stripPixels.setPixelColor(i, stripPixels.Color(0, 0, 0));
+  for(int i=0;i<LOWER_STRIP_PIXELS;i++){
+    lowerStrip.setPixelColor(i, lowerStrip.Color(0, 0, 0));
   } 
-  stripPixels.show();
+  lowerStrip.show();
+
+    for(int i=0;i<UPPER_STRIP_PIXELS;i++){
+    upperStrip.setPixelColor(i, upperStrip.Color(0, 0, 0));
+  } 
+  upperStrip.show();
   
 }
