@@ -13,6 +13,7 @@ Adafruit_NeoPixel upperStrip = Adafruit_NeoPixel(UPPER_STRIP_PIXELS, UPPER_STRIP
 int lowerStripRed = 0;
 int lowerStripBlue = 0;
 int lowerStripGreen = 0;
+
 int upperStripRed = 0;
 int upperStripBlue = 0;
 int upperStripGreen = 0;
@@ -62,71 +63,42 @@ void onNoteOff(byte channel, byte note, byte velocity) {
 }
 
 void onControlChange(byte channel, byte controlType, byte value) {
-  
-  // **** INNER LIGHTS ****
-  
   if(controlType == 20) {
-    if(noteReceived == 51) {
-      innerRingLastRed = (int)value*2;
-      innerLightsOn(innerRingLastRed, innerRingLastGreen, innerRingLastBlue);
-    } else {
-        innerRingLastRed = (int)value*2;
-    }
-  } else if (controlType == 21) {
-      if(noteReceived == 51) {
-        innerRingLastGreen = (int)value*2;
-        innerLightsOn(innerRingLastRed, innerRingLastGreen, innerRingLastBlue);
-      } else {
-          innerRingLastGreen = (int)value*2;
-      }
-  } else if (controlType == 22) {
-      if(noteReceived == 51) {
-        innerRingLastBlue = (int)value*2;
-        innerLightsOn(innerRingLastRed, innerRingLastGreen, innerRingLastBlue);
-      } else {
-          innerRingLastBlue = (int)value*2;
-      }
-      
-  // **** OUTER LIGHTS ****
-  
-  } else if(controlType == 23) {
-    if(noteReceived == 46) {
-      outerRingLastRed = (int)value*2;
-      outerLightsOn(outerRingLastRed, outerRingLastGreen, outerRingLastBlue);
-    } else {
-        outerRingLastRed = (int)value*2;
-    }
-  } else if (controlType == 24) {
-      if(noteReceived == 46) {
-        outerRingLastGreen = (int)value*2;
-        outerLightsOn(outerRingLastRed, outerRingLastGreen, outerRingLastBlue);
-      } else {
-          outerRingLastGreen = (int)value*2;
-      }
-  } else if (controlType == 25) {
-      if(noteReceived == 46) {
-        outerRingLastBlue = (int)value*2;
-        outerLightsOn(outerRingLastRed, outerRingLastGreen, outerRingLastBlue);
-      } else {
-          outerRingLastBlue = (int)value*2;
-      }
-  // **** STRIP LIGHTS ****    
-      
-  } else if(controlType == 26) {
     if(noteReceived == 54) {
       lowerStripRed = (int)value*2;
       lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
     } else {
         lowerStripRed = (int)value*2;
     }
-  } else if (controlType == 27) {
+  } else if (controlType == 21) {
       if(noteReceived == 54) {
         lowerStripGreen = (int)value*2;
         lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
       } else {
           lowerStripGreen = (int)value*2;
       }
-  } else if (controlType == 28) {
+  } else if (controlType == 22) {
+      if(noteReceived == 54) {
+        lowerStripBlue = (int)value*2;
+        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+      } else {
+          lowerStripBlue = (int)value*2;
+      }
+  } else if(controlType == 23) {
+      if(noteReceived == 54) {
+        lowerStripRed = (int)value*2;
+        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+      } else {
+          lowerStripRed = (int)value*2;
+      }
+  } else if (controlType == 24) {
+      if(noteReceived == 54) {
+        lowerStripGreen = (int)value*2;
+        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+      } else {
+          lowerStripGreen = (int)value*2;
+      }
+  } else if (controlType == 25) {
       if(noteReceived == 54) {
         lowerStripBlue = (int)value*2;
         lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
@@ -137,8 +109,8 @@ void onControlChange(byte channel, byte controlType, byte value) {
 }
 
 void stripsOn(int red, green, blue) {
-  lowerStripOn(red, green blue);
-  upperStripOn(red, green blue);
+  lowerStripOn(red, green, blue);
+  upperStripOn(red, green, blue);
 }
 
 void lowerStripOn(int red, int green, int blue) {
