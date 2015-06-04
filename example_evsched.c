@@ -7,12 +7,13 @@ void setup(){
 }
 
 void loop(){
-        ev_sched()
+        ev_sched();
 }
 
 
 void ev_sched{
         if( (millis()-pmillis) >= interval){
+                pmillis=millis();
                 //this runs periodically
                 if(running1){
                         switch(counter1){
