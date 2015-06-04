@@ -1,8 +1,8 @@
 #include <Adafruit_NeoPixel.h>
 #include <avr/power.h>
 
-#define LOWER_STRIP_PIN        6
-#define UPPER_STRIP_PIN        20
+#define LOWER_STRIP_PIN        20
+#define UPPER_STRIP_PIN        6
 
 #define LOWER_STRIP_PIXELS     72
 #define UPPER_STRIP_PIXELS     72
