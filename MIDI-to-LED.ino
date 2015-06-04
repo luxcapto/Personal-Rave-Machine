@@ -1,8 +1,8 @@
 #include <Adafruit_NeoPixel.h>
 #include <avr/power.h>
 
-#define LOWER_STRIP_PIN        20
-#define UPPER_STRIP_PIN        6
+#define LOWER_STRIP_PIN        6
+#define UPPER_STRIP_PIN        20
 
 #define LOWER_STRIP_PIXELS     72
 #define UPPER_STRIP_PIXELS     72
@@ -136,6 +136,54 @@ void upperStripOn(int red, int green, int blue) {
   upperStripGreen = green;
   upperStripBlue = blue;
 }
+
+
+//change color with x axis (cc what?)
+//change brightness with y axis (cc what?)
+
+//need to write fade animation 
+//correlate center led out with data from xy pad
+// void lowerStripExpand(int red, int green, int blue, int ccValue) {
+
+// //mess with delay knoh for actual expand
+//   // 72 pixels (0-71)
+//   // start at 36
+
+//   // cc value 1 ->>> led 36
+//   // cc value 2 ->>> led 35, 36, 37
+//   // cc value 3 ->>> led 34, 34, 35, 36, 37
+
+//   int forward = 36;
+//   for(int i=36; i<(ccValue/2);i--)
+//   {
+//     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+//     forward++;
+//     lowerStrip.setPixelColor(forward, lowerStrip.Color(red, green, blue));
+//     lowerStrip.show();
+//   }  
+
+//   int forward = 36;
+//   for(int i=36; i<LOWER_STRIP_PIXELS;i++)
+//   {
+//     //get the cc value
+//     //if cc value is withing
+//     int ledPosition = i;
+//     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+//     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+//     forward++;
+//     lowerStrip.setPixelColor(forward, lowerStrip.Color(red, green, blue));
+//     lowerStrip.show();
+//   }
+
+// }
+
+// void lowerStripScroll(int red int green, int blue, int ccValue) {
+//     for(int i=0;i<ccValue*2;i++) {
+//       lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue)); 
+//   } 
+  
+//   lowerStrip.show();
+// }
 
 void clearStrips() {
   clearLowerStrip();
