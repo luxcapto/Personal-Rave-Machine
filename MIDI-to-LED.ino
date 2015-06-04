@@ -24,8 +24,6 @@ bool off = false;
 
 void setup() {
 //  Serial.begin(9600);
-  innerRing.begin();
-  outerRing.begin();
   lowerStrip.begin();
   upperStrip.begin();
 
@@ -33,7 +31,7 @@ void setup() {
   usbMIDI.setHandleNoteOn(onNoteOn);
   usbMIDI.setHandleControlChange(onControlChange);
 
-  lowerStripOn(55,55,55);
+  stripsOn(55,55,55);
   delay(2500);
   clearStrips();
 }
@@ -63,21 +61,21 @@ void onNoteOff(byte channel, byte note, byte velocity) {
 }
 
 void onControlChange(byte channel, byte controlType, byte value) {
-  if(controlType == 20) {
+  if(controlType == 26) {
     if(noteReceived == 54) {
       lowerStripRed = (int)value*2;
       lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
     } else {
         lowerStripRed = (int)value*2;
     }
-  } else if (controlType == 21) {
+  } else if (controlType == 27) {
       if(noteReceived == 54) {
         lowerStripGreen = (int)value*2;
         lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
       } else {
           lowerStripGreen = (int)value*2;
       }
-  } else if (controlType == 22) {
+  } else if (controlType == 28) {
       if(noteReceived == 54) {
         lowerStripBlue = (int)value*2;
         lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
@@ -85,30 +83,30 @@ void onControlChange(byte channel, byte controlType, byte value) {
           lowerStripBlue = (int)value*2;
       }
   } else if(controlType == 23) {
-      if(noteReceived == 54) {
-        lowerStripRed = (int)value*2;
-        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+      if(noteReceived == 46) {
+        upperStripRed = (int)value*2;
+        upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
       } else {
-          lowerStripRed = (int)value*2;
+          upperStripRed = (int)value*2;
       }
   } else if (controlType == 24) {
-      if(noteReceived == 54) {
-        lowerStripGreen = (int)value*2;
-        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+      if(noteReceived == 46) {
+        upperStripGreen = (int)value*2;
+        upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
       } else {
-          lowerStripGreen = (int)value*2;
+          upperStripGreen = (int)value*2;
       }
   } else if (controlType == 25) {
-      if(noteReceived == 54) {
-        lowerStripBlue = (int)value*2;
-        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+      if(noteReceived == 46) {
+        upperStripBlue = (int)value*2;
+        upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
       } else {
-          lowerStripBlue = (int)value*2;
+          upperStripBlue = (int)value*2;
       }
   }
 }
 
-void stripsOn(int red, green, blue) {
+void stripsOn(int red, int green, int blue) {
   lowerStripOn(red, green, blue);
   upperStripOn(red, green, blue);
 }
