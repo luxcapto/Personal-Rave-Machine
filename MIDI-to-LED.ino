@@ -1,3 +1,6 @@
+// 
+
+
 #include <Adafruit_NeoPixel.h>
 #include <avr/power.h>
 
@@ -45,7 +48,9 @@ void onNoteOn(byte channel, byte note, byte velocity) {
     lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
   } else if (note == 46) {
     upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
-  } 
+  } else if (note == 55) {
+    lowerStripFirst(lowerStripRed, lowerStripGreen, lowerStripBlue);
+  }
   off = false;
   noteReceived = note;
 }
@@ -55,6 +60,8 @@ void onNoteOff(byte channel, byte note, byte velocity) {
     clearLowerStrip();
   } else if (note == 46) {
     clearUpperStrip();
+  } else if (note == 55) {
+    clearLowerStrip();
   }
   off = true;
   noteOffReceived = note;
@@ -65,6 +72,7 @@ void onControlChange(byte channel, byte controlType, byte value) {
     if(noteReceived == 54) {
       lowerStripRed = (int)value*2;
       lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+      // upAndDown (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
     } else {
         lowerStripRed = (int)value*2;
     }
@@ -111,6 +119,18 @@ void stripsOn(int red, int green, int blue) {
   upperStripOn(red, green, blue);
 }
 
+void lowerStripFirst(int red, int green, int blue) {
+  for (int i=0;i<11;i++) {
+    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+  }
+
+  lowerStrip.show();
+
+  lowerStripRed = red;
+  lowerStripGreen = green;
+  lowerStripBlue = blue;
+}
+
 void lowerStripOn(int red, int green, int blue) {
   
   for(int i=0;i<LOWER_STRIP_PIXELS;i++) {
@@ -136,7 +156,18 @@ void upperStripOn(int red, int green, int blue) {
   upperStripGreen = green;
   upperStripBlue = blue;
 }
+int lastCC = 0;
+void upAndDown(int red, int green, int blue, int ccValue) {
+  lowerStrip.setPixelColor(lastCC, lowerStrip.Color(0, 0, 0));
+  lowerStrip.show();
+  if(ccValue < 72)
+  {
+      lowerStrip.setPixelColor(ccValue, lowerStrip.Color(red, green, blue));
+      lowerStrip.show();
+  }
+  lastCC = ccValue;
 
+}
 
 //change color with x axis (cc what?)
 //change brightness with y axis (cc what?)
