@@ -50,6 +50,8 @@ void onNoteOn(byte channel, byte note, byte velocity) {
     upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
   } else if (note == 55) {
     lowerStripFirst(lowerStripRed, lowerStripGreen, lowerStripBlue);
+  } else if (note == 56) {
+    lowerStripSecond(lowerStripRed, lowerStripGreen, lowerStripBlue);
   }
   off = false;
   noteReceived = note;
@@ -61,6 +63,8 @@ void onNoteOff(byte channel, byte note, byte velocity) {
   } else if (note == 46) {
     clearUpperStrip();
   } else if (note == 55) {
+    clearLowerStrip();
+  } else if (note == 56) {
     clearLowerStrip();
   }
   off = true;
@@ -121,6 +125,18 @@ void stripsOn(int red, int green, int blue) {
 
 void lowerStripFirst(int red, int green, int blue) {
   for (int i=0;i<11;i++) {
+    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+  }
+
+  lowerStrip.show();
+
+  lowerStripRed = red;
+  lowerStripGreen = green;
+  lowerStripBlue = blue;
+}
+
+void lowerStripSecond(int red, int green, int blue) {
+  for (int i=12;i<23;i++) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
   }
 
