@@ -1,4 +1,5 @@
-// 
+// Light mapping legend
+// Lower strip green: 
 
 
 #include <Adafruit_NeoPixel.h>
@@ -73,9 +74,8 @@ void onNoteOff(byte channel, byte note, byte velocity) {
 
 void onControlChange(byte channel, byte controlType, byte value) {
   if(controlType == 26) {
-    if(noteReceived == 54) {
-      lowerStripRed = (int)value*2;
-      lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+        lowerStripRed = (int)value*2;
+        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
       // upAndDown (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
     } else {
         lowerStripRed = (int)value*2;
@@ -99,7 +99,7 @@ void onControlChange(byte channel, byte controlType, byte value) {
         upperStripRed = (int)value*2;
         upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
       } else {
-          upperStripRed = (int)value*2;
+          upperStripRed = (int)value*2x;
       }
   } else if (controlType == 24) {
       if(noteReceived == 46) {
@@ -117,6 +117,7 @@ void onControlChange(byte channel, byte controlType, byte value) {
       }
   }
 }
+
 
 void stripsOn(int red, int green, int blue) {
   lowerStripOn(red, green, blue);
@@ -136,6 +137,19 @@ void lowerStripFirst(int red, int green, int blue) {
 }
 
 void lowerStripSecond(int red, int green, int blue) {
+  for (int i=11;i<23;i++) {
+    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+  }
+
+  lowerStrip.show();
+
+  lowerStripRed = red;
+  lowerStripGreen = green;
+  lowerStripBlue = blue;
+}
+
+
+void lowerStripThird(int red, int green, int blue) {
   for (int i=12;i<23;i++) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
   }
@@ -146,6 +160,7 @@ void lowerStripSecond(int red, int green, int blue) {
   lowerStripGreen = green;
   lowerStripBlue = blue;
 }
+
 
 void lowerStripOn(int red, int green, int blue) {
   
