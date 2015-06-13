@@ -21,6 +21,8 @@ int upperStripRed = 0;
 int upperStripBlue = 0;
 int upperStripGreen = 0;
 
+int lastCC = 0;
+
 byte noteReceived = 0;
 byte noteOffReceived = 0;
 bool off = false;
@@ -46,7 +48,7 @@ void loop() {
 
 void onNoteOn(byte channel, byte note, byte velocity) {
   if (note == 54) {
-    lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+    upAndDown(lowerStripRed, lowerStripGreen, lowerStripBlue, lastCC);
   } else if (note == 46) {
     upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
   } else if (note == 55) {
@@ -82,8 +84,8 @@ void onControlChange(byte channel, byte controlType, byte value) {
     if(controlType == 26) {
       if(noteReceived == 54) {
         lowerStripRed = (int)value*2;
-        lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
-        // upAndDown (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
+        // lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+        upAndDown (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
       } else {
           lowerStripRed = (int)value*2;
       }
@@ -137,6 +139,29 @@ void stripsOff() {
   lowerStrip.show();
   upperStrip.show();
 }
+
+void panOut(int red, int green, int blue, int control) {
+  //Go through the loop 'control' amount of times
+  //Loop? Needs to increment and decrement at the same time
+  //Two variables- the more 'control' the more LEDs light up
+  //72 leds in Strip -> always minus 1 when coding
+  //middle LEDs are 35+36 with -1
+  //can't compare LED position with control- control needs to be relative
+
+  int starting = control + 35;
+  int ending = control + 36;
+
+  for (int i=35;i>starting;i--) {
+    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+  }
+  for (int i=36;i<ending;i++) {
+    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+  }
+  lowerStrip.show();
+
+
+}
+
 
 void lowerStripFirst(int red, int green, int blue) {
   for (int i=0;i<11;i++) {
@@ -199,7 +224,7 @@ void upperStripOn(int red, int green, int blue) {
   upperStripGreen = green;
   upperStripBlue = blue;
 }
-int lastCC = 0;
+
 void upAndDown(int red, int green, int blue, int ccValue) {
   lowerStrip.setPixelColor(lastCC, lowerStrip.Color(0, 0, 0));
   lowerStrip.show();
