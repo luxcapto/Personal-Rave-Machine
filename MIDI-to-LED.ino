@@ -29,7 +29,7 @@ bool off = false;
 bool cc = false;
 
 void setup() {
- // Serial.begin(9600);
+ Serial.begin(9600);
   lowerStrip.begin();
   upperStrip.begin();
 
@@ -38,7 +38,7 @@ void setup() {
   usbMIDI.setHandleControlChange(onControlChange);
 
   stripsOn(55,55,55);
-  delay(2500);
+  delay(250);
   clearStrips();
 }
 
@@ -48,7 +48,7 @@ void loop() {
 
 void onNoteOn(byte channel, byte note, byte velocity) {
   if (note == 54) {
-    upAndDown(lowerStripRed, lowerStripGreen, lowerStripBlue, lastCC);
+    panOut(lowerStripRed, lowerStripGreen, lowerStripBlue, lastCC);
   } else if (note == 46) {
     upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
   } else if (note == 55) {
@@ -63,7 +63,7 @@ void onNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void onNoteOff(byte channel, byte note, byte velocity) {
-  Serial.write("Note off received");
+  // Serial.write("Note off received");
   if (note == 54) {
     clearLowerStrip();
   } else if (note == 46) {
@@ -85,7 +85,8 @@ void onControlChange(byte channel, byte controlType, byte value) {
       if(noteReceived == 54) {
         lowerStripRed = (int)value*2;
         // lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
-        upAndDown (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
+        panOut (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
+        lastCC = (int)value;
       } else {
           lowerStripRed = (int)value*2;
       }
@@ -147,9 +148,29 @@ void panOut(int red, int green, int blue, int control) {
   //72 leds in Strip -> always minus 1 when coding
   //middle LEDs are 35+36 with -1
   //can't compare LED position with control- control needs to be relative
+ 
+  // control = (35/127)*control;
+  // Serial.write("Coverted control is " + control);
+  // Serial.write("Last control is " + lastCC);
 
-  int starting = control + 35;
+
+  int starting = 35 - control;
   int ending = control + 36;
+
+  //max value is 35
+  //need to scale 127 down
+  //   
+
+  if (starting < 0) {
+    starting = 0;
+  }
+
+  if (ending > 71) {
+    ending = 71;
+  }
+
+  //led less than needs to be 35
+  //need to subtrac number off from 35
 
   for (int i=35;i>starting;i--) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
@@ -157,6 +178,7 @@ void panOut(int red, int green, int blue, int control) {
   for (int i=36;i<ending;i++) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
   }
+
   lowerStrip.show();
 
 
