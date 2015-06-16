@@ -1,6 +1,3 @@
-// 
-
-
 #include <Adafruit_NeoPixel.h>
 #include <avr/power.h>
 
@@ -34,8 +31,19 @@ void setup() {
   usbMIDI.setHandleNoteOn(onNoteOn);
   usbMIDI.setHandleControlChange(onControlChange);
 
-  stripsOn(55,55,55);
-  delay(2500);
+  for(int i=0;i<LOWER_STRIP_PIXELS;i++) {
+      lowerStrip.setPixelColor(i, lowerStrip.Color(255, 0, 0));
+      upperStrip.setPixelColor(i, upperStrip.Color(255, 0, 0));
+
+      delay(5);
+      lowerStrip.show(); 
+      upperStrip.show();
+  } 
+  delay(500);
+
+  // lowerStrip.show();
+  // stripsOn(55,55,55);
+  // delay(2500);
   clearStrips();
 }
 
