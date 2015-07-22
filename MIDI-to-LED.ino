@@ -1,6 +1,3 @@
-// 
-
-
 #include <Adafruit_NeoPixel.h>
 #include <avr/power.h>
 
@@ -37,9 +34,19 @@ void setup() {
   usbMIDI.setHandleNoteOn(onNoteOn);
   usbMIDI.setHandleControlChange(onControlChange);
 
-  stripsOn(55,55,55);
-  delay(250);
-  clearStrips();
+ for(int i=0;i<LOWER_STRIP_PIXELS;i++) {
+      lowerStrip.setPixelColor(i, lowerStrip.Color(255, 0, 0));
+      upperStrip.setPixelColor(i, upperStrip.Color(255, 0, 0));
+
+      delay(5);
+      lowerStrip.show(); 
+      upperStrip.show();
+  } 
+  delay(500);
+
+  // stripsOn(55,55,55);
+  // delay(250);
+  // clearStrips();
 }
 
 void loop() {
@@ -154,34 +161,32 @@ void panOut(int red, int green, int blue, int control) {
   // Serial.write("Last control is " + lastCC);
 
 
-  int starting = 35 - control;
-  int ending = control + 36;
+  
+  if(!off) {  
 
-  //max value is 35
-  //need to scale 127 down
-  //   
+    int starting = 35 - control;
+    int ending = control + 36;
 
-  if (starting < 0) {
-    starting = 0;
+    if (starting < 0) {
+      starting = 0;
+    }
+
+    if (ending > 71) {
+      ending = 71;
+    }
+
+    //led less than needs to be 35
+    //need to subtrac number off from 35
+
+    for (int i=35;i>starting;i--) {
+      lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+    }
+    for (int i=36;i<ending;i++) {
+      lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+    }
+
+    lowerStrip.show();
   }
-
-  if (ending > 71) {
-    ending = 71;
-  }
-
-  //led less than needs to be 35
-  //need to subtrac number off from 35
-
-  for (int i=35;i>starting;i--) {
-    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
-  }
-  for (int i=36;i<ending;i++) {
-    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
-  }
-
-  lowerStrip.show();
-
-
 }
 
 
@@ -246,65 +251,6 @@ void upperStripOn(int red, int green, int blue) {
   upperStripGreen = green;
   upperStripBlue = blue;
 }
-
-void upAndDown(int red, int green, int blue, int ccValue) {
-  lowerStrip.setPixelColor(lastCC, lowerStrip.Color(0, 0, 0));
-  lowerStrip.show();
-  if(ccValue < 72)
-  {
-      lowerStrip.setPixelColor(ccValue, lowerStrip.Color(red, green, blue));
-      lowerStrip.show();
-  }
-  lastCC = ccValue;
-
-}
-
-//change color with x axis (cc what?)
-//change brightness with y axis (cc what?)
-
-//need to write fade animation 
-//correlate center led out with data from xy pad
-// void lowerStripExpand(int red, int green, int blue, int ccValue) {
-
-// //mess with delay knoh for actual expand
-//   // 72 pixels (0-71)
-//   // start at 36
-
-//   // cc value 1 ->>> led 36
-//   // cc value 2 ->>> led 35, 36, 37
-//   // cc value 3 ->>> led 34, 34, 35, 36, 37
-
-//   int forward = 36;
-//   for(int i=36; i<(ccValue/2);i--)
-//   {
-//     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
-//     forward++;
-//     lowerStrip.setPixelColor(forward, lowerStrip.Color(red, green, blue));
-//     lowerStrip.show();
-//   }  
-
-//   int forward = 36;
-//   for(int i=36; i<LOWER_STRIP_PIXELS;i++)
-//   {
-//     //get the cc value
-//     //if cc value is withing
-//     int ledPosition = i;
-//     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
-//     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
-//     forward++;
-//     lowerStrip.setPixelColor(forward, lowerStrip.Color(red, green, blue));
-//     lowerStrip.show();
-//   }
-
-// }
-
-// void lowerStripScroll(int red int green, int blue, int ccValue) {
-//     for(int i=0;i<ccValue*2;i++) {
-//       lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue)); 
-//   } 
-  
-//   lowerStrip.show();
-// }
 
 void clearStrips() {
   clearLowerStrip();
