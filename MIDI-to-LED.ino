@@ -46,7 +46,7 @@ void setup() {
 
   // stripsOn(55,55,55);
   // delay(250);
-  // clearStrips();
+   clearStrips();
 }
 
 void loop() {
