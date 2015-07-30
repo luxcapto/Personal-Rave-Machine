@@ -60,10 +60,13 @@ void onNoteOn(byte channel, byte note, byte velocity) {
     upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
   } else if (note == 55) {
     lowerStripFirst(lowerStripRed, lowerStripGreen, lowerStripBlue);
+<<<<<<< HEAD
   } else if (note == 56) {
     lowerStripSecond(lowerStripRed, lowerStripGreen, lowerStripBlue);
   } else if (note == 57) {
     lowerStripThird(lowerStripRed, lowerStripGreen, lowerStripBlue);
+=======
+>>>>>>> parent of 2988218... Pitch commit
   }
   off = false;
   noteReceived = note;
@@ -77,11 +80,15 @@ void onNoteOff(byte channel, byte note, byte velocity) {
     clearUpperStrip();
   } else if (note == 55) {
     clearLowerStrip();
+<<<<<<< HEAD
   } else if (note == 56) {
     clearLowerStrip();
   } else if (note == 57) {
     clearLowerStrip();
   } 
+=======
+  }
+>>>>>>> parent of 2988218... Pitch commit
   off = true;
   noteOffReceived = note;
 }
@@ -202,6 +209,7 @@ void lowerStripFirst(int red, int green, int blue) {
   lowerStripBlue = blue;
 }
 
+<<<<<<< HEAD
 void lowerStripSecond(int red, int green, int blue) {
   for (int i=11;i<22;i++) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
@@ -226,6 +234,8 @@ void lowerStripThird(int red, int green, int blue) {
   lowerStripBlue = blue;
 }
 
+=======
+>>>>>>> parent of 2988218... Pitch commit
 void lowerStripOn(int red, int green, int blue) {
   
   for(int i=0;i<LOWER_STRIP_PIXELS;i++) {
