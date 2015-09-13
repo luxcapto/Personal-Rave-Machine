@@ -79,10 +79,10 @@ void onNoteOff(byte channel, byte note, byte velocity) {
     clearLowerStrip();
   } else if (note == 56) {
     clearLowerStrip();
-  } else if (note == 57) {
+  } else if (note == 57) 
     clearLowerStrip();
   } 
-  }
+  
   off = true;
   noteOffReceived = note;
 }
@@ -91,13 +91,25 @@ void onControlChange(byte channel, byte controlType, byte value) {
   if(!off) {
     if(controlType == 26) {
       if(noteReceived == 54) {
-        lowerStripRed = (int)value*2;
+        // lowerStripRed = (int)value*2;
         // lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
         panOut (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
         lastCC = (int)value;
       } else {
-          lowerStripRed = (int)value*2;
+          // lowerStripRed = (int)value*2;
       }
+      } else if (controlType == 22) {
+        if(noteReceived == 54) {
+          lowerStripRed = (int)value*2;
+          lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
+          Serial.println("Red changed inside 54");
+
+        } else {
+            lowerStripRed = (int)value*2;
+          Serial.println("Red changed outside 54");
+        }
+
+    }
     } else if (controlType == 27) {
         if(noteReceived == 54) {
           lowerStripGreen = (int)value*2;
@@ -135,7 +147,7 @@ void onControlChange(byte channel, byte controlType, byte value) {
         }
     }
   }
-}
+
 
 void stripsOn(int red, int green, int blue) {
   lowerStripOn(red, green, blue);
