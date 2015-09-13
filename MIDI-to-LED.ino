@@ -56,6 +56,8 @@ void loop() {
 void onNoteOn(byte channel, byte note, byte velocity) {
   if (note == 54) {
     panOut(lowerStripRed, lowerStripGreen, lowerStripBlue, lastCC);
+  } else if (note == 58) {
+    lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
   } else if (note == 46) {
     upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
   } else if (note == 55) {
@@ -71,7 +73,7 @@ void onNoteOn(byte channel, byte note, byte velocity) {
 
 void onNoteOff(byte channel, byte note, byte velocity) {
   // Serial.write("Note off received");
-  if (note == 54) {
+  if (note == 54 || note == 58) {
     clearLowerStrip();
   } else if (note == 46) {
     clearUpperStrip();
@@ -79,7 +81,7 @@ void onNoteOff(byte channel, byte note, byte velocity) {
     clearLowerStrip();
   } else if (note == 56) {
     clearLowerStrip();
-  } else if (note == 57) 
+  } else if (note == 57) {
     clearLowerStrip();
   } 
   
@@ -91,34 +93,30 @@ void onControlChange(byte channel, byte controlType, byte value) {
   if(!off) {
     if(controlType == 26) {
       if(noteReceived == 54) {
-        // lowerStripRed = (int)value*2;
-        // lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
         panOut (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
         lastCC = (int)value;
       } else {
           // lowerStripRed = (int)value*2;
       }
       } else if (controlType == 22) {
-        if(noteReceived == 54) {
+        if(noteReceived == 54 || noteReceived == 58) {
           lowerStripRed = (int)value*2;
           lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
-          Serial.println("Red changed inside 54");
 
         } else {
             lowerStripRed = (int)value*2;
-          Serial.println("Red changed outside 54");
         }
 
     }
     } else if (controlType == 27) {
-        if(noteReceived == 54) {
+        if(noteReceived == 54 || noteReceived == 58) {
           lowerStripGreen = (int)value*2;
           lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
         } else {
             lowerStripGreen = (int)value*2;
         }
     } else if (controlType == 28) {
-        if(noteReceived == 54) {
+        if(noteReceived == 54 || noteReceived == 58) {
           lowerStripBlue = (int)value*2;
           lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
         } else {
