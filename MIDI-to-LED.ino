@@ -56,6 +56,8 @@ void loop() {
 void onNoteOn(byte channel, byte note, byte velocity) {
   if (note == 54) {
     panOut(lowerStripRed, lowerStripGreen, lowerStripBlue, lastCC);
+    panOutUpper(lowerStripRed, lowerStripGreen, lowerStripBlue, lastCC);
+
   } else if (note == 58) {
     lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
   } else if (note == 46) {
@@ -66,26 +68,29 @@ void onNoteOn(byte channel, byte note, byte velocity) {
     lowerStripSecond(lowerStripRed, lowerStripGreen, lowerStripBlue);
   } else if (note == 57) {
     lowerStripThird(lowerStripRed, lowerStripGreen, lowerStripBlue);
-  }
+  } else if (note == 59) {
+      lowerStripFourth(lowerStripRed, lowerStripGreen, lowerStripBlue);
+    }
+  
   off = false;
   noteReceived = note;
 }
 
 void onNoteOff(byte channel, byte note, byte velocity) {
   // Serial.write("Note off received");
-  if (note == 54 || note == 58) {
+  if (note == 58) {
     clearLowerStrip();
-  } else if (note == 46) {
+
+  } else if (note == 54) {
+    clearStrips();
+  }
+  else if (note == 46) {
     clearUpperStrip();
-  } else if (note == 55) {
-    clearLowerStrip();
-  } else if (note == 56) {
-    clearLowerStrip();
-  } else if (note == 57) {
+  } else if (note == 55 || 56 || 57 ||59 ) {
     clearLowerStrip();
   } 
   
-  off = true;
+    off = true;
   noteOffReceived = note;
 }
 
@@ -93,11 +98,11 @@ void onControlChange(byte channel, byte controlType, byte value) {
   if(!off) {
     if(controlType == 26) {
       if(noteReceived == 54) {
-        panOut (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
+        panOut(lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
+        panOutUpper (lowerStripRed, lowerStripGreen, lowerStripBlue, (int)value);
         lastCC = (int)value;
-      } else {
-          // lowerStripRed = (int)value*2;
       }
+
       } else if (controlType == 22) {
         if(noteReceived == 54 || noteReceived == 58) {
           lowerStripRed = (int)value*2;
@@ -200,9 +205,49 @@ void panOut(int red, int green, int blue, int control) {
   }
 }
 
+void panOutUpper(int red, int green, int blue, int control) {
+  //Go through the loop 'control' amount of times
+  //Loop? Needs pto increment and decrement at the same time
+  //Two variables- the more 'control' the more LEDs light up
+  //72 leds in Strip -> always minus 1 when coding
+  //middle LEDs are 35+36 with -1
+  //can't compare LED position with control- control needs to be relative
+ 
+  // control = (35/127)*control;
+  // Serial.write("Coverted control is " + control);
+  // Serial.write("Last control is " + lastCC);
+
+
+  
+  if(!off) {  
+
+    int starting = 35 - control;
+    int ending = control + 36;
+
+    if (starting < 0) {
+      starting = 0;
+    }
+
+    if (ending > 71) {
+      ending = 71;
+    }
+
+    //led less than needs to be 35
+    //need to subtrac number off from 35
+
+    for (int i=35;i>starting;i--) {
+      upperStrip.setPixelColor(i, upperStrip.Color(red, green, blue));
+    }
+    for (int i=36;i<ending;i++) {
+      upperStrip.setPixelColor(i, upperStrip.Color(red, green, blue));
+    }
+
+    upperStrip.show();
+  }
+}
 
 void lowerStripFirst(int red, int green, int blue) {
-  for (int i=0;i<11;i++) {
+  for (int i=0;i<17;i++) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
   }
 
@@ -214,7 +259,7 @@ void lowerStripFirst(int red, int green, int blue) {
 }
 
 void lowerStripSecond(int red, int green, int blue) {
-  for (int i=11;i<22;i++) {
+  for (int i=17;i<35;i++) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
   }
 
@@ -226,7 +271,19 @@ void lowerStripSecond(int red, int green, int blue) {
 }
 
 void lowerStripThird(int red, int green, int blue) {
-  for (int i=22;i<33;i++) {
+  for (int i=35;i<53;i++) {
+    lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
+  }
+
+  lowerStrip.show();
+
+  lowerStripRed = red;
+  lowerStripGreen = green;
+  lowerStripBlue = blue;
+}
+
+void lowerStripFourth(int red, int green, int blue) {
+  for (int i=53;i<72;i++) {
     lowerStrip.setPixelColor(i, lowerStrip.Color(red, green, blue));
   }
 
