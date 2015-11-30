@@ -26,7 +26,7 @@ byte noteOffReceived = 0;
 bool off = false;
 
 void setup() {
-//  Serial.begin(9600);
+ Serial.begin(9600);
   lowerStrip.begin();
   upperStrip.begin();
 
@@ -48,6 +48,7 @@ void onNoteOn(byte channel, byte note, byte velocity) {
     lowerStripOn(lowerStripRed, lowerStripGreen, lowerStripBlue);
   } else if (note == 46) {
     upperStripOn(upperStripRed, upperStripGreen, upperStripBlue);
+    Serial.print("Byte 46 triggered");
   } else if (note == 55) {
     lowerStripFirst(lowerStripRed, lowerStripGreen, lowerStripBlue);
   } else if (note == 56) {
