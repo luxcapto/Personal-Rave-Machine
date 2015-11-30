@@ -58,9 +58,12 @@ void onNoteOn(byte channel, byte note, byte velocity) {
     Serial.print("Byte 46 triggered");
   } else if (note == 55) {
     lowerStripFirst(lowerStripRed, lowerStripGreen, lowerStripBlue);
+<<<<<<< HEAD
   } else if (note == 56) {
     lowerStripSecond(lowerStripRed, lowerStripGreen, lowerStripBlue);
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 2988218... Pitch commit
   }
 =======
   } else if (note == 57) {
@@ -90,8 +93,6 @@ void onNoteOff(byte channel, byte note, byte velocity) {
     clearUpperStrip();
 <<<<<<< HEAD
   } else if (note == 55) {
-    clearLowerStrip();
-  } else if (note == 56) {
     clearLowerStrip();
   }
   off = true;
@@ -291,6 +292,7 @@ void lowerStripFirst(int red, int green, int blue) {
   lowerStripBlue = blue;
 }
 
+<<<<<<< HEAD
 void lowerStripSecond(int red, int green, int blue) {
 <<<<<<< HEAD
   for (int i=12;i<23;i++) {
@@ -334,6 +336,8 @@ void lowerStripFourth(int red, int green, int blue) {
 }
 
 >>>>>>> origin/v2
+=======
+>>>>>>> parent of 2988218... Pitch commit
 void lowerStripOn(int red, int green, int blue) {
   
   for(int i=0;i<LOWER_STRIP_PIXELS;i++) {
